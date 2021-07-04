@@ -20,13 +20,16 @@ class Schdedule():
         n_of_teams = len(self.teams)
         n_of_groups = n_of_teams // 3
 
-        groups = [[] for group in range(0, n_of_groups)]
-        teams = copy.copy(self.teams)
-        while teams:
-            for group in range(0, n_of_groups):
-                groups[group] += [teams.pop()]
-                if not teams:
-                    break
+        groups = list()
+        team_index = 0
+        for group_index in range(0, n_of_groups):
+            if group_index < n_of_teams % n_of_groups:
+                group_size = n_of_teams // n_of_groups + 1
+            else:
+                group_size = n_of_teams // n_of_groups
+
+            groups.append(self.teams[team_index:team_index+group_size])
+            team_index += group_size
 
         return groups
 
