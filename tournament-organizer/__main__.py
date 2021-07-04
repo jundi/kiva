@@ -1,37 +1,96 @@
 """Script that creates round-robin schedule."""
 import argparse
-import copy
+import dataclasses
 import pathlib
 import random
+
+
+# Order of matches in group for each possible size of group.
+GROUP_MATCHES = {
+    3: [
+        [(0, 1), (0, 2), (1, 2)]
+    ],
+    4: [
+        [(2, 3), (0, 2), (0, 3)],
+        [(0, 1), (1, 3), (1, 2)]
+    ],
+    5: [
+        [(2, 3), (0, 4), (0, 3), (0, 2), (1, 3)],
+        [(0, 1), (1, 2), (1, 4), (3, 4), (2, 4)]
+    ],
+    6: [
+        [(2, 3), (0, 4), (0, 3), (0, 2), (1, 3)],
+        [(0, 1), (1, 2), (1, 4), (3, 4), (2, 4)],
+        [(4, 5), (3, 5), (2, 5), (1, 5), (0, 5)]
+    ],
+}
+
+
+@dataclasses.dataclass
+class Match:
+    """Match class."""
+    team_a: str
+    team_b: str
+    round_: int
+    field: int
+    group: int
 
 
 class Schdedule():
     """Round robin schedule."""
 
-    def __init__(self, teams):
+    def __init__(self, teams, min_group_size=3):
         self.teams = teams
+        self.min_group_size = min_group_size
 
     def draw(self):
         """Order teams randomly."""
         random.shuffle(self.teams)
 
+    @property
+    def num_of_groups(self):
+        """Number of groups."""
+        return len(self.teams) // self.min_group_size
+
+    @property
     def groups(self):
         """Return list of groups. Each group contains list of teams."""
         n_of_teams = len(self.teams)
-        n_of_groups = n_of_teams // 3
 
-        groups = list()
+        groups = dict()
         team_index = 0
-        for group_index in range(0, n_of_groups):
-            if group_index < n_of_teams % n_of_groups:
-                group_size = n_of_teams // n_of_groups + 1
+        for group_index in range(0, self.num_of_groups):
+            if group_index < n_of_teams % self.num_of_groups:
+                group_size = n_of_teams // self.num_of_groups + 1
             else:
-                group_size = n_of_teams // n_of_groups
+                group_size = n_of_teams // self.num_of_groups
 
-            groups.append(self.teams[team_index:team_index+group_size])
+            groups[group_index] = self.teams[team_index:team_index+group_size]
             team_index += group_size
 
         return groups
+
+    @property
+    def matches(self):
+        """Create list of matches."""
+
+        matches = list()
+        field_index = 0
+        for group_index, group_teams in self.groups.items():
+            for field in GROUP_MATCHES[len(group_teams)]:
+                round_ = 0
+                for match in field:
+                    matches.append(
+                        Match(group_teams[match[0]],
+                              group_teams[match[1]],
+                              round_,
+                              field_index,
+                              group_index)
+                    )
+                    round_ += 1
+                field_index += 1
+
+        return matches
 
 
 def main():
@@ -45,10 +104,23 @@ def main():
     teams_file = pathlib.Path(args.teams)
     teams = teams_file.read_text().splitlines()
 
-    # Print groups
+    # Create match schedule
     schedule = Schdedule(teams)
     schedule.draw()
-    print(schedule.groups())
+
+    # Print groups
+    for group_index, teams in schedule.groups.items():
+        print(f"\nGROUP {group_index}")
+        for team in teams:
+            print(team)
+
+    # Print schedule
+    for match in schedule.matches:
+        if match.round_ == 0:
+            print('')
+        print(f'FIELD: {match.field} '
+              f'ROUND: {match.round_} '
+              f'{match.team_a} - {match.team_b}')
 
 
 if __name__ == "__main__":
