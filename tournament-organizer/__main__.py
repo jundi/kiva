@@ -50,7 +50,12 @@ class Schdedule():
     @property
     def num_of_groups(self):
         """Number of groups."""
-        return len(self.teams) // self.min_group_size
+        num_of_groups = 1
+
+        while len(self.teams) >= num_of_groups*2 * self.min_group_size:
+            num_of_groups *= 2
+
+        return num_of_groups
 
     @property
     def groups(self):
