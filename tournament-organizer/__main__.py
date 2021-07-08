@@ -36,7 +36,7 @@ class Match:
     group: int
 
 
-class Schdedule():
+class Tournament():
     """Round robin schedule."""
 
     def __init__(self, teams, min_group_size=3):
@@ -110,22 +110,20 @@ def main():
     teams = teams_file.read_text().splitlines()
 
     # Create match schedule
-    schedule = Schdedule(teams)
-    schedule.draw()
+    tournament = Tournament(teams)
+    tournament.draw()
 
     # Print groups
-    for group_index, teams in schedule.groups.items():
-        print(f"\nGROUP {group_index}")
+    for group_index, teams in tournament.groups.items():
+        print(f"\nGROUP {group_index+1}")
         for team in teams:
             print(team)
 
     # Print schedule
-    for match in schedule.matches:
+    for match in tournament.matches:
         if match.round_ == 0:
-            print('')
-        print(f'FIELD: {match.field} '
-              f'ROUND: {match.round_} '
-              f'{match.team_a} - {match.team_b}')
+            print(f'\nGROUP {match.group+1}, FIELD {match.field+1}')
+        print(f'{match.round_+1}: {match.team_a} - {match.team_b}')
 
 
 if __name__ == "__main__":
