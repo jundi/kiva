@@ -103,6 +103,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('teams',
                         help="Textfile that contains list of teams")
+    parser.add_argument('--draw',
+                        help="Teams in random order",
+                        action="store_true")
     args = parser.parse_args()
 
     # Read teams
@@ -111,7 +114,18 @@ def main():
 
     # Create match schedule
     tournament = Tournament(teams)
-    tournament.draw()
+    if args.draw:
+        tournament.draw()
+        draw_file_index = 0
+        while True:
+            draw_file = pathlib.Path(
+                args.teams + '.draw' + str(draw_file_index)
+            )
+            if not draw_file.exists():
+                break
+            draw_file_index += 1
+        draw_file.write_text("\n".join(tournament.teams))
+        print(f"Teams saved to {draw_file}")
 
     # Print groups
     for group_index, teams in tournament.groups.items():
