@@ -29,18 +29,24 @@ GROUP_MATCHES = {
 @dataclasses.dataclass
 class Match:
     """Match class."""
+
     team_a: str
     team_b: str
     round_: int
-    field: int
+    location: str
     group: int
 
 
 class Tournament():
     """Round robin schedule."""
 
-    def __init__(self, teams, min_group_size=3):
+    def __init__(self, teams, locations=None, min_group_size=3):
+        """Init tournament."""
         self.teams = teams
+        if locations:
+            self.locations = locations
+        else:
+            self.locations = [f"Field {x+1}" for x in range(len(teams))]
         self.min_group_size = min_group_size
 
     def draw(self):
@@ -49,7 +55,7 @@ class Tournament():
 
     @property
     def num_of_groups(self):
-        """Number of groups."""
+        """Return number of groups."""
         num_of_groups = 1
 
         while len(self.teams) >= num_of_groups*2 * self.min_group_size:
@@ -62,15 +68,21 @@ class Tournament():
         """Return list of groups. Each group contains list of teams."""
         n_of_teams = len(self.teams)
 
-        groups = dict()
+        groups = list()
         team_index = 0
         for group_index in range(0, self.num_of_groups):
+            # Decide group size
             if group_index < n_of_teams % self.num_of_groups:
                 group_size = n_of_teams // self.num_of_groups + 1
             else:
                 group_size = n_of_teams // self.num_of_groups
 
-            groups[group_index] = self.teams[team_index:team_index+group_size]
+            # Add group to list
+            groups.append({
+                'number': group_index+1,
+                'teams': self.teams[team_index:team_index+group_size]
+            })
+
             team_index += group_size
 
         return groups
@@ -78,22 +90,21 @@ class Tournament():
     @property
     def matches(self):
         """Create list of matches."""
-
         matches = list()
-        field_index = 0
-        for group_index, group_teams in self.groups.items():
-            for field in GROUP_MATCHES[len(group_teams)]:
-                round_ = 0
+        location_index = 0
+        for group in self.groups:
+            for field in GROUP_MATCHES[len(group['teams'])]:
+                round_ = 1
                 for match in field:
                     matches.append(
-                        Match(group_teams[match[0]],
-                              group_teams[match[1]],
+                        Match(group['teams'][match[0]],
+                              group['teams'][match[1]],
                               round_,
-                              field_index,
-                              group_index)
+                              self.locations[location_index],
+                              group['number'])
                     )
                     round_ += 1
-                field_index += 1
+                location_index += 1
 
         return matches
 
@@ -103,6 +114,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('teams',
                         help="Textfile that contains list of teams")
+    parser.add_argument('--locations',
+                        help="Textfile that contains locations for matches")
     parser.add_argument('--draw',
                         help="Teams in random order",
                         action="store_true")
@@ -112,8 +125,14 @@ def main():
     teams_file = pathlib.Path(args.teams)
     teams = teams_file.read_text().splitlines()
 
+    # Read locations
+    if args.locations:
+        locations = pathlib.Path(args.locations).read_text().splitlines()
+    else:
+        locations = None
+
     # Create match schedule
-    tournament = Tournament(teams)
+    tournament = Tournament(teams, locations)
     if args.draw:
         tournament.draw()
         draw_file_index = 0
@@ -128,16 +147,16 @@ def main():
         print(f"Teams saved to {draw_file}")
 
     # Print groups
-    for group_index, teams in tournament.groups.items():
-        print(f"\nGROUP {group_index+1}")
-        for team in teams:
+    for group in tournament.groups:
+        print(f"\nGROUP {group['number']}")
+        for team in group['teams']:
             print(team)
 
     # Print schedule
     for match in tournament.matches:
-        if match.round_ == 0:
-            print(f'\nGROUP {match.group+1}, FIELD {match.field+1}')
-        print(f'{match.round_+1}: {match.team_a} - {match.team_b}')
+        if match.round_ == 1:
+            print(f'\nGROUP {match.group}, {match.location}')
+        print(f'{match.round_}: {match.team_a} - {match.team_b}')
 
 
 if __name__ == "__main__":
