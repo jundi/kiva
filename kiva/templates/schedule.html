@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% for location in schedule %}
+		<p>Group {{ location[0].group }}, {{ location[0].location }}</p>
+		<table>
+			{% for match in location %}
+				<tr>
+					<td>{{ match.round_ }}. </td>
+					<td style="text-align: center;">{{ match.team_a }}</td>
+					<td>—</td>
+					<td style="text-align: center;">{{ match.team_b }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endfor %}
+{% endblock %}
