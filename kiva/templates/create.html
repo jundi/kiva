@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form action = "http://localhost:5000/create" method = "post">
+<form action = "{{ url }}" method = "post">
 	<h2>Create new tournament</h2>
 	<textarea rows="16" cols="60" name="teams" placeholder="Enter one team per line"></textarea>
 	<br/>

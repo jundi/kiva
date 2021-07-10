@@ -1,6 +1,6 @@
 """Start Flask application"""
 import uuid
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for
 from kiva.tournament import Tournament
 
 
@@ -13,7 +13,7 @@ def create_app():
     @app.route('/create', methods=['POST', 'GET'])
     def _create():
         if request.method == 'GET':
-            return render_template('create.html')
+            return render_template('create.html', url=url_for('_create'))
 
         teams = request.form['teams'].splitlines()
         identifier = uuid.uuid4().hex[:6]
