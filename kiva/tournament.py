@@ -105,3 +105,17 @@ class Tournament():
                 location_index += 1
 
         return matches
+
+    @property
+    def schedule(self):
+        """List of matches for each location."""
+        schedule = list()
+        for location in self.locations:
+            matches = [match for match in self.matches
+                       if match.location == location]
+            # skip locations that do not have any matches
+            if matches:
+                schedule.append([match for match in self.matches
+                                 if match.location == location])
+
+        return schedule

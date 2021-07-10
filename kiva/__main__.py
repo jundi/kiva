@@ -49,10 +49,10 @@ def main():
             print(team)
 
     # Print schedule
-    for match in tournament.matches:
-        if match.round_ == 1:
-            print(f'\nGROUP {match.group}, {match.location}')
-        print(f'{match.round_}: {match.team_a} - {match.team_b}')
+    for location in tournament.schedule:
+        print(f'\nGROUP {location[0].group}, {location[0].location}')
+        for match in location:
+            print(f'{match.round_}: {match.team_a} - {match.team_b}')
 
 
 if __name__ == "__main__":

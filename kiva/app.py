@@ -10,7 +10,7 @@ def create_app():
     tournaments = []
 
     @app.route('/create', methods=['POST', 'GET'])
-    def _create_tournament():
+    def _create():
         if request.method == 'GET':
             return render_template('create.html')
 
@@ -19,9 +19,9 @@ def create_app():
         return jsonify(teams)
 
     @app.route('/schedule/<int:tournament_id>', methods=['GET'])
-    def _view_tournament_schedule(tournament_id):
+    def _schedule(tournament_id):
         return render_template('view_schedule.html',
-                               matches=tournaments[tournament_id].matches)
+                               schedule=tournaments[tournament_id].schedule)
 
     return app
 
