@@ -20,7 +20,7 @@ def create_app():
 
     @app.route('/schedule/<int:tournament_id>', methods=['GET'])
     def _schedule(tournament_id):
-        return render_template('view_schedule.html',
+        return render_template('schedule.html',
                                schedule=tournaments[tournament_id].schedule)
 
     return app
