@@ -1,5 +1,6 @@
 """Start Flask application"""
-from flask import Flask, request, render_template, jsonify
+import uuid
+from flask import Flask, request, render_template, redirect
 from kiva.tournament import Tournament
 
 
@@ -7,7 +8,7 @@ def create_app():
     """Create flask application."""
     app = Flask(__name__)
 
-    tournaments = []
+    tournaments = dict()
 
     @app.route('/create', methods=['POST', 'GET'])
     def _create():
@@ -15,13 +16,15 @@ def create_app():
             return render_template('create.html')
 
         teams = request.form['teams'].splitlines()
-        tournaments.append(Tournament(teams))
-        return jsonify(teams)
+        identifier = uuid.uuid4().hex[:6]
+        tournaments[identifier] = Tournament(teams)
 
-    @app.route('/schedule/<int:tournament_id>', methods=['GET'])
-    def _schedule(tournament_id):
+        return redirect(f'/schedule/{identifier}')
+
+    @app.route('/schedule/<identifier>', methods=['GET'])
+    def _schedule(identifier):
         return render_template('schedule.html',
-                               schedule=tournaments[tournament_id].schedule)
+                               schedule=tournaments[identifier].schedule)
 
     return app
 
