@@ -2,14 +2,14 @@
 
 {% block content %}
 	{% for location in schedule %}
-		<h2>Group {{ location[0].group }}, {{ location[0].location }}</h2>
-		<table class="table table-striped">
+		<table class="table table-striped caption-top">
+			<caption style="caption-sice:top;">Group {{ location[0].group }}, {{ location[0].location }}</caption>
 			{% for match in location %}
 				<tr>
-					<td>{{ match.round_ }}. </td>
-					<td>{{ match.team_a }}</td>
-					<td>—</td>
-					<td>{{ match.team_b }}</td>
+					<td class=col-1>{{ match.round_ }}. </td>
+					<td class=col-5 style="text-align:right;">{{ match.team_a }}</td>
+					<td class=col-1 style="text-align:center;">—</td>
+					<td class=col-5>{{ match.team_b }}</td>
 				</tr>
 			{% endfor %}
 		</table>
