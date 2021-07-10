@@ -1,0 +1,19 @@
+<html>
+	<body>
+		<table>
+		{% for match in matches %}
+		{% if match.round_ == 1 %}
+		</table>
+		<p>Group {{ match.group }}, {{ match.location }}</p>
+		<table>
+		{% endif %}
+			<tr>
+				<td>{{ match.round_ }}. </td>
+				<td style="text-align: center;">{{ match.team_a }}</td>
+				<td>—</td>
+				<td style="text-align: center;">{{ match.team_b }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</body>
+</html>
