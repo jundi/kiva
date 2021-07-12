@@ -1,6 +1,9 @@
 {% extends 'tournament_base.html' %}
 
 {% block content %}
+    <form action="{{ url_for('_draw', identifier=identifier)}}" method="post">
+        <input type="submit" value="Draw" />
+    </form>
     {% for group in groups %}
         <table class="table table-striped caption-top">
             <caption style="caption-sice:top;">Group {{ group.number }} </caption>

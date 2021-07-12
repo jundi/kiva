@@ -36,6 +36,14 @@ def create_app():
         return render_template('tournaments.html',
                                tournaments=tournaments)
 
+    @app.route('/tournaments/<identifier>/draw', methods=['POST'])
+    def _draw(identifier):
+
+        tournaments[identifier].draw()
+
+        # Forward to groups
+        return redirect(url_for('_groups', identifier=identifier))
+
     @app.route('/tournaments/<identifier>/groups', methods=['GET'])
     def _groups(identifier):
         return render_template('groups.html',
