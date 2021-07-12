@@ -29,15 +29,20 @@ def create_app():
         tournaments[identifier] = Tournament(teams)
 
         # Forward to groups
-        return redirect(f'/groups/{identifier}')
+        return redirect(url_for('_groups', identifier=identifier))
 
-    @app.route('/groups/<identifier>', methods=['GET'])
+    @app.route('/tournaments/', methods=['GET'])
+    def _tournaments():
+        return render_template('tournaments.html',
+                               tournaments=tournaments)
+
+    @app.route('/tournaments/<identifier>/groups', methods=['GET'])
     def _groups(identifier):
         return render_template('groups.html',
                                groups=tournaments[identifier].groups,
                                identifier=identifier)
 
-    @app.route('/schedule/<identifier>', methods=['GET'])
+    @app.route('/tournaments/<identifier>/schedule', methods=['GET'])
     def _schedule(identifier):
         return render_template('schedule.html',
                                schedule=tournaments[identifier].schedule,

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Tournaments</h2>
+    <table class="table table-striped caption-top">
+        {% for tournament in tournaments %}
+            <tr>
+                <td class=col-12 ><a href={{ url_for('_groups', identifier=tournament) }}>{{ tournament }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

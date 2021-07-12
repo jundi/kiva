@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block tabs %}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {%if request.path == url_for('_groups', identifier=identifier) %} active {% endif %}" href="{{ url_for('_groups', identifier=identifier) }}">Groups</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {%if request.path == url_for('_schedule', identifier=identifier) %} active {% endif %}" href="{{ url_for('_schedule', identifier=identifier) }}">Schedule</a>
+    </li>
+</ul>
+{% endblock %}

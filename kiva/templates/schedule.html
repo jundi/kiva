@@ -1,7 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'tournament_base.html' %}
 
 {% block content %}
-    <h2>Schedule</h2>
     {% for location in schedule %}
         <table class="table table-striped caption-top">
             <caption style="caption-sice:top;">Group {{ location[0].group }}, {{ location[0].location }}</caption>

@@ -17,14 +17,11 @@
                     <a class="nav-link" href="{{ url_for('_create') }}">Create</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('_groups', identifier=identifier) }}">Groups</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('_schedule', identifier=identifier) }}">Schedule</a>
+                    <a class="nav-link" href="{{ url_for('_tournaments') }}">Tournaments</a>
                 </li>
             </ul>
         </nav>
-
+        {% block tabs %}{% endblock %}
         <div class=container-fluid>
             {% block content %}{% endblock %}
         </div>
