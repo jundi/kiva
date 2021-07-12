@@ -28,13 +28,20 @@ def create_app():
         identifier = uuid.uuid4().hex[:6]
         tournaments[identifier] = Tournament(teams)
 
-        # Forward to schedule
-        return redirect(f'/schedule/{identifier}')
+        # Forward to groups
+        return redirect(f'/groups/{identifier}')
+
+    @app.route('/groups/<identifier>', methods=['GET'])
+    def _groups(identifier):
+        return render_template('groups.html',
+                               groups=tournaments[identifier].groups,
+                               identifier=identifier)
 
     @app.route('/schedule/<identifier>', methods=['GET'])
     def _schedule(identifier):
         return render_template('schedule.html',
-                               schedule=tournaments[identifier].schedule)
+                               schedule=tournaments[identifier].schedule,
+                               identifier=identifier)
 
     @app.errorhandler(werkzeug.exceptions.HTTPException)
     def _handle_exception(exception):
