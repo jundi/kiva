@@ -1,4 +1,6 @@
 """Start Flask application"""
+import json
+from pathlib import Path
 import uuid
 from flask import Flask, request, render_template, redirect, url_for, abort
 import werkzeug
@@ -9,7 +11,42 @@ def create_app():
     """Create flask application."""
     app = Flask(__name__)
 
-    tournaments = dict()
+    # Flask provides instance_path for per-deployment data outside the code tree.
+    storage_path = Path(app.instance_path) / "tournaments.json"
+
+    def _serialize_tournament(tournament):
+        return {
+            "teams": tournament.teams,
+            "locations": tournament.locations,
+            "min_group_size": tournament.min_group_size,
+        }
+
+    def _load_tournaments():
+        if not storage_path.exists():
+            return {}
+
+        with storage_path.open() as handle:
+            data = json.load(handle)
+
+        tournaments = {}
+        for identifier, payload in data.items():
+            tournaments[identifier] = Tournament(
+                payload["teams"],
+                locations=payload.get("locations"),
+                min_group_size=payload.get("min_group_size", 3),
+            )
+        return tournaments
+
+    def _save_tournaments(tournaments):
+        storage_path.parent.mkdir(parents=True, exist_ok=True)
+        data = {
+            identifier: _serialize_tournament(tournament)
+            for identifier, tournament in tournaments.items()
+        }
+        with storage_path.open("w") as handle:
+            json.dump(data, handle, indent=2, sort_keys=True)
+
+    tournaments = _load_tournaments()
 
     @app.route('/create', methods=['POST', 'GET'])
     def _create():
@@ -27,6 +64,7 @@ def create_app():
         # Create new tournament
         identifier = uuid.uuid4().hex[:6]
         tournaments[identifier] = Tournament(teams)
+        _save_tournaments(tournaments)
 
         # Forward to groups
         return redirect(url_for('_groups', identifier=identifier))
@@ -40,6 +78,7 @@ def create_app():
     def _draw(identifier):
 
         tournaments[identifier].draw()
+        _save_tournaments(tournaments)
 
         # Forward to groups
         return redirect(url_for('_groups', identifier=identifier))
