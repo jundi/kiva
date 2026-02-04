@@ -1,6 +1,5 @@
 """Start Flask application"""
 import json
-import os
 from pathlib import Path
 import uuid
 from flask import Flask, request, render_template, redirect, url_for, abort
@@ -10,11 +9,7 @@ from kiva.tournament import Tournament
 
 def create_app(instance_path=None):
     """Create flask application."""
-    instance_path = instance_path or os.environ.get("KIVA_INSTANCE_PATH")
-    if instance_path:
-        app = Flask(__name__, instance_path=instance_path)
-    else:
-        app = Flask(__name__)
+    app = Flask(__name__)
 
     # Flask provides instance_path for per-deployment data outside the code tree.
     storage_path = Path(app.instance_path) / "tournaments.json"
